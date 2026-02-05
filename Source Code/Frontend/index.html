@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EQ Predict - Home</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+/* ----------------------------------------------------------
+   GLOBAL VARIABLES & RESET
+   -----------------------------------------------------------*/
+:root {
+    --bg-color: #0f172a;
+    --surface-color: #1e293b;
+    --primary-color: #8b5cf6;
+    --primary-hover-color: #7c3aed;
+    --accent-color: #06b6d4;
+    --text-color: #f1f5f9;
+    --text-muted-color: #94a3b8;
+    --border-color: #334155;
+    --success-color: #10b981;
+    --error-color: #ef4444;
+    --border-radius-lg: 16px;
+    --border-radius-sm: 8px;
+    --transition-speed: 0.3s ease;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ----------------------------------------------------------
+   FIXED VIEWPORT - NO SCROLLING
+   -----------------------------------------------------------*/
+
+html {
+    height: 100%; 
+    overflow: hidden; /* No scrolling */
+}
+
+body {
+    font-family: var(--font-family);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: var(--text-color);
+    line-height: 1.6;
+    font-size: 14px; 
+    position: relative;
+    overflow: hidden; /* No scrolling */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Animated background */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+main {
+    flex: 1;
+    width: 100%; 
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; /* No scrolling */
+    min-height: 0; /* Allow flex shrinking */
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 12px;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color var(--transition-speed);
+}
+
+a:hover {
+    color: var(--primary-hover-color);
+}
+
+/* Focus states for accessibility */
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    line-height: 1.2;
+    margin-bottom: 0.5em;
+    font-weight: 700;
+}
+
+h1 { font-size: 2.8rem; } 
+h2 { font-size: 2.2rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.15rem; }
+
+/* Visually hidden class for screen readers */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ----------------------------------------------------------
+   HEADER & NAVIGATION
+   -----------------------------------------------------------*/
+.header {
+    background: rgba(15, 23, 42, 0.8);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    padding: 0.75rem 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0; 
+    width: 100%;
+}
+
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo a {
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+    display: inline-flex;
+    align-items: center;
+}
+
+.logo i {
+    margin-right: 0.6rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.main-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+}
+
+.main-nav a {
+    color: var(--text-muted-color);
+    font-weight: 600;
+    padding: 0.5rem 0.8rem;
+    border-radius: 9999px;
+    transition: all var(--transition-speed);
+    font-size: 0.85rem;
+}
+
+.main-nav a:hover {
+    color: var(--text-color);
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.main-nav a.active {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover-color) 100%);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+/* ----------------------------------------------------------
+   HOME PAGE SPECIFIC STYLES
+   -----------------------------------------------------------*/
+
+h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 0.4rem;
+    color: var(--primary-color);
+    text-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+}
+
+.hero-section {
+    padding: 0;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.subtitle {
+    color: var(--text-muted-color);
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+}
+
+/* --- MAIN CONTENT GRID - FITS VIEWPORT --- */
+.main-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 1.25rem; 
+    max-width: 1100px;
+    margin: 0 auto;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* --- FORM COLUMN --- */
+.form-column {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* --- CARD STYLE --- */
+.card {
+    background: var(--surface-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1rem; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.prediction-form-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.prediction-form-container form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 0;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    color: var(--text-color);
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+}
+
+.form-group small {
+    color: var(--text-muted-color);
+    font-size: 0.75rem;
+    margin-top: 0.4rem;
+}
+
+.form-group.textarea-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    resize: none; 
+    flex: 1;
+    min-height: 0;
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+/* Error state for textarea */
+.form-group textarea.error {
+    border-color: var(--error-color);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.error-message {
+    color: var(--error-color);
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* File Upload Button Styling */
+.file-upload-label {
+    display: block;
+    background-color: var(--bg-color);
+    color: var(--accent-color);
+    padding: 0.75rem;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all var(--transition-speed);
+}
+
+.file-upload-label:hover {
+    border-color: var(--accent-color);
+    background-color: rgba(6, 182, 212, 0.05);
+}
+
+.file-upload-label:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+}
+
+#file-input {
+    display: none; 
+}
+
+/* --- BUTTON STYLES --- */
+.btn {
+    font-weight: 700;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--font-family);
+    font-size: 0.8rem;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover-color) 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+.generate-btn {
+    background: var(--accent-color);
+    color: var(--bg-color);
+}
+
+.generate-btn:hover:not(:disabled) {
+    background: #0891b2;
+    box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+}
+
+/* ----------------------------------------------------------
+   VISUALIZATIONS COLUMN - NO OVERFLOW
+   -----------------------------------------------------------*/
+.visualizations-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-height: 0;
+}
+
+/* Base style for both chart and results cards */
+.chart-card, .results-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Card specifically for the Waveform chart */
+.chart-card {
+    flex: 1.5;
+}
+
+/* Inner container - no scrolling */
+.chart-inner-content {
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+    padding: 0.75rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-placeholder {
+    color: var(--text-muted-color);
+    font-style: italic;
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.85rem;
+}
+
+#waveform-chart {
+    display: none; 
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Prediction Results Box */
+.results-container {
+    flex: 1;
+}
+
+.results-content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+    width: 100%; 
+    padding: 0 1rem; 
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+}
+
+.results-container h3 {
+    flex-shrink: 0; 
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+/* Loader and Message Styles */
+.loader {
+    border: 5px solid var(--border-color);
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    animation: spin 1s linear infinite;
+    display: none;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.auto-adjust-msg {
+    color: var(--text-muted-color);
+    font-style: italic;
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+/* Prediction Results List Styling */
+#prediction-results {
+    display: none;
+    padding: 0.75rem 0;
+    width: 100%; 
+    max-width: 380px; 
+    margin: 0 auto; 
+    text-align: left;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    width: 100%;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-label {
+    color: var(--text-muted-color);
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.result-value {
+    color: var(--success-color);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* Download Button */
+.btn-download {
+    margin-top: 1rem;
+    background: linear-gradient(135deg, var(--primary-hover-color) 0%, var(--primary-color) 100%);
+    box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+    font-size: 0.8rem;
+    padding: 0.7rem 1.25rem;
+}
+
+/* ----------------------------------------------------------
+   FOOTER
+   -----------------------------------------------------------*/
+.footer {
+    padding: 1rem 0; 
+    background: rgba(15, 23, 42, 0.5);
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0; 
+    width: 100%;
+}
+
+.footer .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.footer p {
+    color: var(--text-muted-color);
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.social-links a {
+    color: var(--text-muted-color);
+    font-size: 1.2rem;
+    margin-left: 1rem;
+    transition: color var(--transition-speed);
+}
+
+.social-links a:hover {
+    color: var(--primary-color);
+}
+
+/* ----------------------------------------------------------
+   RESPONSIVE DESIGN - STILL NO SCROLLING
+   -----------------------------------------------------------*/
+@media (max-width: 992px) {
+    .main-content-grid {
+        grid-template-columns: 1fr; 
+        gap: 1rem;
+    }
+    
+    main {
+        overflow: hidden;
+    }
+    
+    h1 {
+        font-size: 1.4rem;
+    }
+    
+    .subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .card {
+        padding: 0.875rem;
+    }
+    
+    .form-group label {
+        font-size: 0.8rem;
+    }
+    
+    .btn {
+        padding: 0.65rem 1rem;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 0.6rem 0;
+    }
+    
+    .header .container {
+        flex-wrap: wrap;
+    }
+    
+    .logo a {
+        font-size: 1.4rem;
+    }
+    
+    .main-nav {
+        order: 3;
+        width: 100%;
+        margin-top: 0.6rem;
+    }
+    
+    .main-nav ul {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.4rem;
+    }
+    
+    .main-nav a {
+        padding: 0.4rem 0.65rem;
+        font-size: 0.75rem;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+    }
+    
+    .subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .footer {
+        padding: 0.875rem 0;
+    }
+    
+    .footer .container {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .social-links a:first-child {
+        margin-left: 0;
+    }
+    
+    .result-label,
+    .result-value {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.2rem;
+    }
+    
+    .logo a {
+        font-size: 1.25rem;
+    }
+    
+    .logo i {
+        margin-right: 0.4rem;
+    }
+    
+    .main-nav a {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.7rem;
+    }
+    
+    .btn {
+        padding: 0.6rem 0.9rem;
+        font-size: 0.7rem;
+    }
+    
+    .card {
+        padding: 0.75rem;
+    }
+}
+
+/* ----------------------------------------------------------
+   PRINT STYLES
+   -----------------------------------------------------------*/
+@media print {
+    .header,
+    .footer,
+    .file-upload-group,
+    .btn {
+        display: none;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+    
+    .card {
+        border: 1px solid #ccc;
+        box-shadow: none;
+    }
+}
+        
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html"><i class="fas fa-wave-square"></i> EQ Predict</a>
+            </div>
+
+            <nav class="main-nav">
+                <ul>
+                    <li><a class="active" href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="projects.html">Project</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="hero-section">
+            <div class="container">
+                <h1>Earthquake Prediction with Deep Learning</h1>
+                <p class="subtitle">Upload seismic data or auto-generate 900 features.</p>
+
+                <div class="main-content-grid">
+                    
+                    <div class="form-column">
+                        <div class="prediction-form-container card">
+                            <form id="prediction-form">
+
+                                <div class="form-group textarea-group">
+                                    <label for="data-input">Input Waveform Data</label>
+                                    <textarea id="data-input" rows="8" placeholder="Paste or upload data (3-channel, comma-separated values)..."></textarea>
+                                    <small>Enter raw P-wave signal data (e.g., Z, N, E components).</small>
+                                </div>
+
+                                <div class="form-group file-upload-group">
+                                    <label for="file-input" class="file-upload-label">
+                                        <i class="fas fa-upload"></i> Upload .txt / .csv
+                                    </label>
+                                    <input type="file" id="file-input" accept=".txt,.csv">
+                                </div>
+
+                                <button id="generate-json-btn" type="button" class="btn generate-btn">
+                                    <i class="fa-solid fa-bolt"></i> Auto-Generate Features
+                                </button>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-cogs"></i> Run Prediction
+                                </button>
+
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="visualizations-column">
+                        
+                        <!-- <div id="waveform-card" class="card chart-card">
+                            <h3><i class="fas fa-chart-line"></i> Waveform Visualization</h3>
+                            <div class="chart-inner-content">
+                                <div id="chart-placeholder" class="chart-placeholder">
+                                    Data visualization will appear here after running prediction.
+                                </div>
+                                <canvas id="waveform-chart" style="display: none;"></canvas>
+                            </div>
+                        </div> -->
+                        
+                        <div id="results-container" class="card results-container">
+                            <div class="results-content">
+                                <h3><i class="fas fa-brain"></i> Prediction Results</h3>
+                                
+                                <div id="auto-adjust-msg" class="auto-adjust-msg">
+                                    Enter data and click 'Run Prediction' to see real-time earthquake parameters (Magnitude, Distance, Azimuth, Depth).
+                                </div>
+                                
+                                <div class="loader" id="loader"></div>
+                                
+                                <div id="prediction-results" class="prediction-results-list">
+                                    <div class="result-item">
+                                        <span class="result-label">Predicted Magnitude</span>
+                                        <span class="result-value" data-result="magnitude">--</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span class="result-label">Epicentral Distance (km)</span>
+                                        <span class="result-value" data-result="distance">--</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span class="result-label">Azimuth (degrees)</span>
+                                        <span class="result-value" data-result="azimuth">--</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span class="result-label">Depth (km)</span>
+                                        <span class="result-value" data-result="depth">--</span>
+                                    </div>
+                                    
+                                    <button id="download-btn" type="button" class="btn btn-primary btn-download">
+                                        <i class="fas fa-download"></i> Download Prediction JSON
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Chamundeswari. All Rights Reserved.</p>
+            <div class="social-links">
+                <a href="https://www.linkedin.com/in/ammisetty-chamundeswari-371676287/" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/Ammisettychamu33" title="GitHub"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
